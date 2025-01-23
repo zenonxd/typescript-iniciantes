@@ -2,7 +2,9 @@
 
 Curso de Typescript para iniciantes, realizado na Origamid e lecionado pelo André Rafael.
 
-# Types
+# Introdução
+
+## Types
 
 O tipo define o que podemos fazer com um dado.
 
@@ -39,11 +41,11 @@ const numbers = 100 + 200;
 console.log(operacao, strings, numbers);
 ```
 
-## Como os erros são identificados? 
+### Como os erros são identificados? 
 
 Porque o TypeScript já está funcionando no fundo da nossa IDE (mesmo que não tenhamos nenhum arquivo TS criado).
 
-## Possíveis erros com JS
+### Possíveis erros com JS
 
 Entretanto, somente com o JS, caso tentássemos realizar uma operação que não condiz com o valor, ele não nos mostraria
 um erro, veja:
@@ -67,9 +69,7 @@ Ou seja, caso tentássemos por ventura, pegar o numero arredondado (100) e somar
 
 Isso é outro exemplo do que o JavaScript permite, mas que com o TypeScript, não será possível.
 
-
-
-# Type annotations
+### Type annotations
 
 Até a presente data, o JavaScript não possui uma forma de indicar o tipo de dado que uma variável terá.
 
@@ -81,7 +81,7 @@ type annotations, "anotações de tipo".
 
 Nós anotamos o tipo que ela irá receber e o tipo que irá retornar!
 
-## Proposta para o JS
+### Proposta para o JS
 
 Existe em proposta a ideia de incluir uma sintaxe parecida com a do TypeScript direto no JavaScript:
 
@@ -99,7 +99,7 @@ Exemplo na IDE (talvez com o VSCode) seja assim:
 
 Repare, não é possível acessar as características do objeto.
 
-# Ferramentas TypeScript
+### Ferramentas TypeScript
 
 ## Node, NPM, Git
 
@@ -110,10 +110,6 @@ Repare, não é possível acessar as características do objeto.
 Opcional, eu uso Intellij.
 
 Plugins: Liver Server, Origamid Next, Prettier
-
-
-
-
 
 ## Importando TS
 
@@ -173,3 +169,219 @@ tsc -w
 ```
 
 Assim, ele ficará em "watch mode".
+
+
+# Prática
+
+## Annotation 
+
+O TypeScript nos permite indicar qual será o tipo de dado de uma variável através de anotações (: string).
+
+Antes:
+
+```ts
+const produto = 'Livro';
+
+let preco = 200;
+
+const carro: {
+  marca: 'Audi',
+  portas: 5,
+};
+```
+
+Agora, podemos realizar as declarações. 
+
+❗Importante: quando for um objeto, precisamos declarar antes dele, o que cada atributo terá como tipo!
+
+```ts
+
+const produto: string = "Livro";
+
+const number: number = 200;
+
+// Criamos a constante, utilizamos ":" e abrimos o objeto declarando o tipo das variáveis.
+// Além disso, usamos ";" no final.
+
+const carro: {
+    marca: string;
+    portas: number;
+} = {
+    marca: "Audi",
+    portas: 5
+}
+```
+
+## Inferência
+
+O TypeScript consegue inferir o tipo de dado de expressões em JavaScript.
+
+Por exemplo, sempre que ele conseguir inferir, você NÃO precisa fazer a anotação do dado.
+
+Então não é sempre que iremos precisar declarar o tipo de uma variável! Na verdade, é até mesmo uma
+boa prática não anotar sempre.
+
+**Agora, no tocante a uso de funções onde teremos parâmetro que não iremos saber ao certo seus tipos, o ideal
+é que sim, declaremos o tipo esperado delas.**
+
+### Annotations em funções
+
+As anotações são necessárias quando lidamos com funções.
+
+```ts
+function somar(a: number, b: number) {
+    return a + b;
+}
+
+somar(5, 10)
+
+//somar("10", "10") - não irá funcionar, pois é String e declaramos que somente
+//number seria aceito
+
+const nintendo = {
+    nome: "Nintendo",
+    preco: '2000'
+};
+
+//note que precisamos passar o tipo dos atributos do objeto
+function transformarPreco(produto: {nome: string; preco: string}) {
+    produto.preco = 'R$ ' + produto.preco;
+    return produto;
+}
+
+const novoProduto = transformarPreco(nintendo)
+console.log(novoProduto)
+```
+
+## Tipos básicos primitivos (Number, String, Typof...)
+
+### Number, String, Boolean
+
+String, number e boolean são tipos básicos do TypeScript (primitivos).
+
+Também existem outros como: null, undefined, etc.
+
+```ts
+const frase: string = 'Front End';
+const preco: number = 500;
+const condi: boolean = preco > 100;
+```
+
+### Typeof
+
+É um operador JavaScript que retorna uma String indicando o tipo do dado.
+
+Os possíveis valores retornados por typeof são: string, number, boolean, function, object, undefined, bigint e symbol.
+
+O typeof funciona como um "type guard".
+
+**❗importante: funciona bem com tipos primitivos, mas com objetos não tanto.**
+
+```ts
+const frase = 'Front End';
+const preco = 500;
+const condi = preco > 100;
+
+//nós escrevemos 'string'/'number'/'number' porque o retorno dele falando se é um ou outro, é uma string.
+if (typeof frase === 'string') {
+  console.log('frase é string');
+}
+if (typeof preco === 'number') {
+  console.log('preco é number');
+}
+if (typeof condi === 'boolean') {
+  console.log('condi é boolean');
+}
+```
+
+#### Typeof com objetos
+
+O mesmo não funciona tão bem com objetos porque afinal... muitas coisas são objetos: arrays, objects, null.
+
+O ideal será usar [instanceOf](), veremos mais a frente.
+
+#### Type guard
+
+Seria uma "proteção" do tipo!
+
+```ts
+const frase = 'Front End';
+if (typeof frase === 'string') {
+    console.log('frase é string');
+}
+```
+
+Dentro do if nós basicamente deixamos claros: só será possível trabalhar com "frase" se a mesma for do tipo String.
+
+#### String, Number, Boolean ≠ string, number, boolean
+
+Os tipos primitivos declarados com letra maiúscula, são funções construtoras dos tipos primitivos que começam com letra
+minúscula.
+
+String, Number e Boolean são responsáveis pela herança das propriedades e métodos do mesmos (``toLowerCase()``, 
+``toFixed()``, etc).
+
+```ts
+const frase1 = new String('Front End'); //gera um novo objeto do tipo String
+const frase2 = String('Front End'); //usa a função construtora, isso é uma string, não um object
+const frase3 = 'Front End'; //string pura, onde podemos utilizar os métodos do objeto (protótipo, "String"), exemplo ⬇️
+
+String.prototype.toLowerCase()
+
+console.log(typeof frase1);
+console.log(typeof frase2);
+console.log(typeof frase3);
+```
+
+
+## Union Types
+
+É comum termos funções que podem retornar ou receber tipos diferentes. Para isso usamos a barra vertical, exemplo:
+
+``string | number | boolean``
+
+```ts
+//comecou com numero
+let total: string | number = 200;
+
+//terminou com string
+total = '300';
+```
+
+### Em função
+
+Funções podem receber parâmetros com diferentes tipos e também podem retornar diferentes tipos de dados.
+
+**Entretanto, mesmo que ela receba diferentes tipos de valor, o ideal é que ela retorne somente UM tipo de valor (boolean,
+string).**
+
+```ts
+import validate = WebAssembly.validate;
+
+function isNumber(value: string | number) {
+    if (typeof value === 'number') {
+        return true;
+    } else {
+        return false;
+    }
+}
+```
+
+### DOM
+
+No DOM, o Union Type vai funcionar a todo momento! Ora, o TypeScript não tem como verificar todo o arquivo HTML, ele
+também não faz ideia do que existe no DOM.
+
+No exemplo abaixo, selecionamos um button. Entretanto, ele não tem como saber se ele virá ou não! Portanto, pode ser
+um HTMLButtonElement ou null.
+
+```ts
+// Retorna HTMLButtonElement | null
+const button = document.querySelector('button');
+
+// Optional chaining
+// Executa click() se button for diferente de null/undefined
+button?.click();
+
+//a grosso modo: button existe? se sim, click se não retorne null/undefined.
+```

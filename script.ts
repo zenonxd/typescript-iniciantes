@@ -1,5 +1,11 @@
-function somar(a: number, b:number) {
-    return a + b;
+function toNumber(value: number | string) {
+    if (typeof value === 'number') {
+        return Number(value);
+    } else if (typeof value === 'string') {
+        return value;
+    } else {
+        throw new Error('Invalid input. Please provide a number or a string.');
+    }
 }
 
-console.log(somar(5, 10))
+console.log(toNumber(true));
