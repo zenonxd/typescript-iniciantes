@@ -575,3 +575,174 @@ function filtrarValores(data: Array<number | string>) {
 ```
 
 
+
+
+## Any
+
+Any indica que o dado pode conter qualquer tipo de dado do TypeScript. 
+
+Devemos evitar o máximo seu uso, pois ele remove todas as seguranças e conveniências que o TS fornece, basicamente, 
+**é como se não tivéssemos utilizando TypeScript**.
+
+```ts
+//utilizando any, ele não nos dará as possibilidades de métodos que advém do método string,
+//seja ele trim, to lowerCase, etc.
+function normalizar(texto: any) {
+  return texto.trim().toLowerCase();
+}
+
+normalizar(' DeSIGN');
+
+//ele só vai dar o erro no runtime do console
+normalizar(200);
+```
+
+### Quando usar any
+
+Ele so fará sentido em alguns casos, quando uma função for retornar algo tipo "any" e não a gente criando algo do tipo
+"any".
+
+Um bom exemplo disso, são as funções que realizam fetch de JSON, onde qualquer tipo de dado pode ser retornado
+(dependendo da API que acessarmos).
+
+```ts
+async function fetchJSON(url: string) {
+  const response = await fetch(url);
+  const data = await response.json();
+}
+
+fetchJSON('https://api.origamid.dev/json/cursos.json');
+```
+
+### Any e Erros - pode quebrar aplicações
+
+Usar o any pode quebrar sua aplicação! Veja:
+
+```ts
+interface Curso {
+  nome: string;
+  horas: number;
+}
+
+function mostrarCursos(cursos: Curso[]) {
+  cursos.forEach((curso) => {
+    document.body.innerHTML += `
+      <div>
+        <h2>${curso.nome}</h2>
+        <p>Horas: ${curso.horas}</p>
+      </div>
+    `;
+  });
+}
+
+
+const dados: any = 'o any gera problemas';
+//isso dará erro, pois a função irá tentar iterar sobre essa constante e não será possível
+//visto que ela só reconhecerá Arrays do tipo Curso (interface). Mas como é um any, ele tentaria fazer.
+//Portanto, novament, não é o ideal utilizar Any.
+mostrarCursos(dados);
+```
+
+## Null
+
+Null é um tipo primitivo. Ele representa **ausência de valor.** É comum em funções do DOM que fazem uma busca, acabarem
+retornando null quando não são bem sucedidas, veja:
+
+![img_3.png](img_3.png)
+
+```ts
+const button = document.querySelector('button');
+const config = localStorage.getItem('config');
+
+//maneira 1
+if (button !== null) {
+    //caso não seja null e exista, será
+    //possível acessar as propriedades do button
+  button.click();
+}
+
+//maneira 2
+if (button) {
+    //podemos fazer uma checagem booleana direto
+  button.click();
+}
+
+//maneira 3
+//if na mesma linha
+if (button) button.click();
+
+//maneira 4
+//if ternario
+button?.click();
+
+//typeof de null é objeto, mas isso é um bug do javascript que não foi resolvido para não quebrar aplicações já
+//existentes
+console.log(typeof null);
+```
+
+## Undefined
+
+Undefined representa variáveis/propriedades que foram instanciadas, ou seja, existem na memória! Porém, os seus valores
+ainda não foram definidos, veja:
+
+```ts
+let total;
+console.log(total); // undefined
+
+const data = {};
+console.log(data.nome); // undefined
+```
+
+## Propriedades Opcionais
+
+O undefined será um valor bem comum quando estivermos trabalhando com objetos que possuem propriedades adicionais.
+
+Propriedades adicionais é algo que **pode ou não existir naquele objeto.** 
+
+Para definir uma propriedade opcional, antes do ":" passamos "?":
+
+```ts
+interface Product {
+    nome?: string;
+}
+```
+
+**Ou seja, com isso podemos criar o objeto com o nome ou sem ele.**
+
+```ts
+//criando sem nome
+const livro: Product = {};
+
+//criando com nome
+const jogo: Product = {
+  nome: 'Ragnarok',
+};
+
+jogo.nome?.toLowerCase(); //nome pode ser string | undefined
+livro.nome?.toLowerCase(); //nome pode ser string | undefined
+```
+
+## strictNullChecks
+
+É responsável por retornar um erro para a gente caso a gente não verifique se um valor que tem a possibilidade de ser
+``null | undefined`` é de fato um dos dois.
+
+```json
+//tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "strict": true, // já incluso no strict
+    "strictNullChecks": true
+  }
+}
+```
+
+Essa propriedade já está dentro do ``strict: true``.
+
+Sem essa propriedade como true (estando false), o TypeScript assume que qualquer valor pode incluir ``null | undefined`` e
+consequentemente parar de checar casos onde realmente o ``null | undefined`` podem ser retornados.
+
+
+
+
