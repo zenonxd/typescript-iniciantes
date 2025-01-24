@@ -333,7 +333,6 @@ console.log(typeof frase2);
 console.log(typeof frase3);
 ```
 
-
 ## Union Types
 
 É comum termos funções que podem retornar ou receber tipos diferentes. Para isso usamos a barra vertical, exemplo:
@@ -385,3 +384,194 @@ button?.click();
 
 //a grosso modo: button existe? se sim, click se não retorne null/undefined.
 ```
+
+## Trabalhando com objetos - Types e interfaces
+
+Nós podemos definir a forma de um objeto de uma maneira parecida com a que criamos um objeto, veja:
+
+```ts
+function preencherDados(dados : {
+    //chave e depois do ":" tipo do dado, usando ";" no final
+    nome: string;
+    preco: number;
+    teclado: boolean;
+})
+```
+
+E podemos logo após, passar um HTML para acessar os atributos dessa função.
+
+```ts
+function preencherDados(dados : {
+    //chave e depois do ":" tipo do dado, usando ";" no final
+    nome: string;
+    preco: number;
+    teclado: boolean;
+}) {
+    document.body.innerHTML = `
+    <div>
+        <h1>${dados.nome}</h1>
+        <p>R$ ${dados.preco}</p>
+        <p>Inclui teclado: ${dados.teclado ? 'sim' : 'não'}</p>
+    
+    </div>
+    
+    `;
+
+}
+
+preencherDados({
+    nome: 'Smartphone',
+    preco: 999.99,
+    teclado: true,
+})
+```
+
+O problema dessa função é que ela acaba ficando muito complexa e com muita informação. Existe uma maneira da gente
+melhorar a escrita dela, utilizaremos o ``Type``, veja:
+
+### Type
+
+Essa palavra-chave cria um atalho (um alias) para um tipo customizado! Veja abaixo, criamos um tipo que pode ser
+number ou string e partir disso, podemos usar esse tipo em uma variável.
+
+```ts
+//pode ser number ou string
+type NumberOrString = number | string;
+
+let total: NumberOrString = 10;
+
+//e alteramos de number para string
+total = '200';
+```
+
+O exemplo acima não se faz tanto sentido usar. Mas para um tipo mais complexo (como objeto), sim, veja outro exemplo:
+
+```ts
+type Produto = {
+    nome: string;
+    preco: number;
+    teclado: boolean;
+};
+
+function preencherDados(dados: Produto) {
+    document.body.innerHTML = `
+    <div>
+        <h1>${dados.nome}</h1>
+        <p>R$ ${dados.preco}</p>
+        <p>Inclui teclado: ${dados.teclado ? 'sim' : 'não'}</p>
+    
+    </div>
+    `;
+}
+
+//criamos o objeto declarando o seu tipo
+const computador: Produto = {
+    nome: "Computador",
+    preco: 2000,
+    teclado: true
+}
+
+preencherDados(computador);
+```
+
+Isso não serve só para um objeto, outro bom exemplo é com categorias!
+
+```ts
+type Categorias = 'design' | 'codigo' | 'descod'
+
+//frisamos para ele aceitar somente do tipo Categoria, ou seja, umas das 3 strings acima
+function pintarCategoria(categoria: Categorias) {
+    console.log(categoria);
+    
+    //da pra utiizar ifs também
+    if (categoria == 'design') {
+        console.log("Pintar de vermelho")
+    }
+}
+
+pintarCategoria('codigo');
+```
+
+### Interface
+
+Funciona na maioria dos casos da mesma forma que type, porém possui uma sintaxe diferente. As interfaces são geralmente
+utilizadas para definirmos objetos.
+
+Essa diferença vai ser explorada em tópicos futuros. Por hora, utilizaremos **Type para tipos primitivos** e **Interface
+para objetos**.
+
+```ts
+interface InterfaceProduto {
+    nome: string;
+    preco: number;
+    teclado: true;
+}
+
+type TypeProduto = {
+    nome: string;
+    preco: number;
+    teclado: true;
+}
+
+function preencherDados(dados: InterfaceProduto) {
+    document.body.innerHTML += `
+  <div>
+    <h2>${dados.nome}</h2>
+    <p>R$ ${dados.preco}</p>
+    <p>Inclui teclado: ${dados.teclado ? 'sim' : 'não'}</p>
+  </div>
+  `;
+}
+```
+
+## Arrays
+
+Uma array é definida com o tipo de dado que ela possui, seguida por [].
+
+Uma array também pode possuir union types (dois tipos diferentes), number/string.
+
+```ts
+const numeros = [10, 30, 40, 5, 3, 30];
+const valores = [10, 'Taxas', 40, 'Produto', 3, 30];
+
+function maiorQue10(data: number[]) {
+    return data.filter((n) => n > 10);
+}
+
+console.log(maiorQue10(numeros))
+
+function filtrarValores(data: (number | string)[]) {
+    return data.filter((item) => typeof item === 'number');
+}
+
+console.log(filtrarValores(valores));
+```
+
+Podemos também possuir array de arrays, veja:
+
+```ts
+const dados: (string | number)[][] = [
+    ['senhor dos aneis', 80],
+    ['a guerra dos tronos', 120],
+]
+```
+
+### Sintaxe alternativa array
+
+Existe uma sintaxe alternativa onde usamos Array<type>. Sendo type o tipo de dado dentro da array.
+
+```ts
+const numeros = [10, 30, 40, 5, 3, 30];
+const valores = [10, 'Taxas', 40, 'Produto', 3, 30];
+
+
+function maiorQue10(data: Array<number>) {
+    return data.filter((i) => i > 10);
+}
+
+function filtrarValores(data: Array<number | string>) {
+    return data.filter((item) => typeof item === 'number');
+}
+```
+
+
